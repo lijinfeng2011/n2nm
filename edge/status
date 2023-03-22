@@ -8,10 +8,6 @@ use YAML::XS;
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 
-my $port = $c->{supernode}{port};
-die "port err" unless $port && $port =~ /^\d+$/;
-system "supernode -p $port";
-
 my @x = `ifconfig |grep ^$c->{d}:`;
 chomp @x;
 
