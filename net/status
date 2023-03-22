@@ -8,4 +8,11 @@ use YAML::XS;
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 
-system "route -n |grep \" $c->{d}\$\"|grep 255.255.255.255";
+my @x = `route -n |grep \" $c->{d}\$\"|grep 255.255.255.255|grep UGH`;
+chomp @x;
+
+for( @x )
+{
+    my ( $ip, $proxy ) = split /\s+/, $_;
+    print "$ip: $proxy\n";
+}

@@ -10,15 +10,60 @@ my ( $ip, $proxy ) = @ARGV;
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 
+my $net = eval{ YAML::XS::LoadFile "$RealBin/../my.net"; };
+die "load my.net fail: $@" if $@;
+
 my $name = `cat $RealBin/../my.name`;
 chomp $name;
 
-unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ )
+
+
+my %net;
+
+for $ip ( keys %$net )
 {
-    $proxy = $c->{edge}{$proxy};
+    my $proxy = $net->{$ip};
+    unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ )
+    {
+        $proxy = $c->{edge}{$proxy};
+    }
+
+    die "no proxy" unless $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/;
+    $net{$ip} = $proxy;
 }
 
-die "proxy err" unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ );
 
-print "ip route add $ip via $proxy dev edge0";
-print "\n";
+my @status = `$RealBin/status`;
+chomp @status;
+my %status;
+for( @status )
+{
+    next unless $_ =~ /^(.+):\s+(.+)$/;
+    $status{$1} = $2;
+}
+
+for $ip ( keys %net )
+{
+    my $proxy = $net{$ip};
+
+    my $currproxy = $status{$ip};
+    if( $currproxy )
+    {
+        if( $currproxy ne $proxy )
+        {
+            system "$RealBin/del $ip";
+            system "$RealBin/add $ip $proxy";
+        }
+    }
+    else
+    {
+        system "$RealBin/add $ip $proxy";
+    }
+}
+
+for my $ip ( keys %status )
+{
+    next if $net{$ip};
+    system "$RealBin/del $ip";
+}
+system "$RealBin/status";
