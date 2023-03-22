@@ -8,11 +8,11 @@ use YAML::XS;
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 
-my $port = $c->{supernode}{port};
-die "port err" unless $port && $port =~ /^\d+$/;
-system "supernode -p $port";
-
-my $name = `cat $RealBin/../my.name`;
+my    $name = `cat $RealBin/../my.name`;
 chomp $name;
+die "name undef" unless $name;
 
-system "ps -ef|grep ' $c->{supernode}{ip}:$port '|grep ' $c->{edge}{$name} '|grep ' $c->{c} '|grep ' $c->{d} '|awk '{print \$2}'|xargs -i{} kill {}";
+map{ die "$_ undef" unless $c->{$_} }qw( d c k m );
+map{ die "supernode.$_ undef" unless $c->{supernode}{$_} }qw( ip port );
+
+system "ps -ef|grep ' $c->{supernode}{ip}:$c->{supernode}{port} '|grep ' $c->{edge}{$name} '|grep ' $c->{c} '|grep ' $c->{d} '|awk '{print \$2}'|xargs -i{} kill {}";
