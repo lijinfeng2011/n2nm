@@ -5,32 +5,20 @@ use warnings;
 use FindBin qw( $RealBin );
 use YAML::XS;
 
+my ( $dev ) = @ARGV;
+
+$dev ||= 'eth0';
+
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 
-my $port = $c->{supernode}{port};
-die "port err" unless $port && $port =~ /^\d+$/;
-system "supernode -p $port";
-
-my $name = `cat $RealBin/../name`;
-chomp $name;
-
-my @x = `ifconfig |grep ^$c->{d}:`;
-chomp @x;
-
-print "iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT";
-print "\n";
-print "iptables --append FORWARD --source $c->{net} --jump ACCEPT";
-print "\n";
+system "iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT";
+system "iptables --append FORWARD --source $c->{net} --jump ACCEPT";
 ###eth0 注意
-print "iptables -t nat -A POSTROUTING -s $c->{net} -o eth0 -j MASQUERADE";
-print "\n";
+system "iptables -t nat -A POSTROUTING -s $c->{net} -o $dev -j MASQUERADE";
 
-print "iptables-save";
-print "\n";
+system "iptables-save";
 
-print "sysctl -w net.ipv4.ip_forward=1";
-
-print "\n";
+system "sysctl -w net.ipv4.ip_forward=1";
 
 #vi /etc/sysctl.conf --> net.ipv4.ip_forward=1 （永久开启）
