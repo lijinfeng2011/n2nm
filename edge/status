@@ -8,15 +8,8 @@ use YAML::XS;
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 
-my @x = `ifconfig |grep ^$c->{d}:`;
+die "d undef" unless $c->{d};
+my    @x = `ifconfig |grep ^$c->{d}:`;
 chomp @x;
 
-if( @x )
-{
-    print "running\n";
-    exit;
-}
-else
-{
-    print "stoped.\n";
-}
+printf "%s\n", @x ? "running" : "stoped";
