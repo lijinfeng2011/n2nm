@@ -20,5 +20,4 @@ unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ )
 
 die "proxy err" unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ );
 
-print "ip route add $ip via $proxy dev edge0";
-print "\n";
+system "ip route add $ip via $proxy dev $c->{d}";

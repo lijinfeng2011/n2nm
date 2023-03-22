@@ -7,5 +7,4 @@ use YAML::XS;
 
 my ( $ip ) = @ARGV;
 
-print "ip r del $ip";
-print "\n";
+system "ip r del $ip";
