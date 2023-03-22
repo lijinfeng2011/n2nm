@@ -5,12 +5,14 @@ use warnings;
 use FindBin qw( $RealBin );
 use YAML::XS;
 
-my ( $dev ) = @ARGV;
+my $dev = shift @ARGV;
 
 $dev ||= 'eth0';
 
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
+
+die "net undef" unless $c->{net};
 
 system "iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT";
 system "iptables --append FORWARD --source $c->{net} --jump ACCEPT";
