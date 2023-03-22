@@ -10,4 +10,5 @@ die "load conf fail: $@" if $@;
 
 my $port = $c->{supernode}{port};
 die "port err" unless $port && $port =~ /^\d+$/;
+
 system "supernode -p $port";
