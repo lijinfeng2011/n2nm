@@ -1,0 +1,28 @@
+#!/opt/mydan/perl/bin/perl
+use strict;
+use warnings;
+
+use FindBin qw( $RealBin );
+use YAML::XS;
+
+my ( $ip, $proxy ) = @ARGV;
+
+my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
+die "load conf fail: $@" if $@;
+
+my $port = $c->{supernode}{port};
+die "port err" unless $port && $port =~ /^\d+$/;
+system "supernode -p $port";
+
+my $name = `cat $RealBin/../name`;
+chomp $name;
+
+unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ )
+{
+    $proxy = $c->{edge}{$proxy};
+}
+
+die "proxy err" unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ );
+
+print "ip route add $ip via $proxy dev edge0";
+print "\n";

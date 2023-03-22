@@ -1,0 +1,14 @@
+supernode:
+  ip: 10.60.77.73
+  port: 6699
+
+k: eff5bc1ef8edwedce640fc4davereaew
+d: edge0
+c: n2n
+m: 1500
+
+net: 192.168.100.0/24
+
+edge:
+  c3: 192.168.100.1
+  98: 192.168.100.2

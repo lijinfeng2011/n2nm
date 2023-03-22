@@ -1,0 +1,11 @@
+#!/opt/mydan/perl/bin/perl
+use strict;
+use warnings;
+
+use FindBin qw( $RealBin );
+use YAML::XS;
+
+my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
+die "load conf fail: $@" if $@;
+
+system "route -n |grep \" $c->{d}\$\"|grep 255.255.255.255";

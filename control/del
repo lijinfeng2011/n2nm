@@ -1,0 +1,11 @@
+#!/opt/mydan/perl/bin/perl
+use strict;
+use warnings;
+
+use FindBin qw( $RealBin );
+use YAML::XS;
+
+my ( $ip ) = @ARGV;
+
+print "ip r del $ip";
+print "\n";

@@ -1,0 +1,36 @@
+#!/opt/mydan/perl/bin/perl
+use strict;
+use warnings;
+
+use FindBin qw( $RealBin );
+use YAML::XS;
+
+my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
+die "load conf fail: $@" if $@;
+
+my $port = $c->{supernode}{port};
+die "port err" unless $port && $port =~ /^\d+$/;
+system "supernode -p $port";
+
+my $name = `cat $RealBin/../name`;
+chomp $name;
+
+my @x = `ifconfig |grep ^$c->{d}:`;
+chomp @x;
+
+print "iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT";
+print "\n";
+print "iptables --append FORWARD --source $c->{net} --jump ACCEPT";
+print "\n";
+###eth0 注意
+print "iptables -t nat -A POSTROUTING -s $c->{net} -o eth0 -j MASQUERADE";
+print "\n";
+
+print "iptables-save";
+print "\n";
+
+print "sysctl -w net.ipv4.ip_forward=1";
+
+print "\n";
+
+#vi /etc/sysctl.conf --> net.ipv4.ip_forward=1 （永久开启）

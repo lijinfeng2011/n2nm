@@ -1,0 +1,18 @@
+#!/opt/mydan/perl/bin/perl
+use strict;
+use warnings;
+
+use FindBin qw( $RealBin );
+use YAML::XS;
+
+my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
+die "load conf fail: $@" if $@;
+
+my $port = $c->{supernode}{port};
+die "port err" unless $port && $port =~ /^\d+$/;
+system "supernode -p $port";
+
+my $name = `cat $RealBin/../name`;
+chomp $name;
+
+system "ps -ef|grep ' $c->{supernode}{ip}:$port '|grep ' $c->{edge}{$name} '|grep ' $c->{c} '|grep ' $c->{d} '|awk '{print \$2}'|xargs -i{} kill {}";
