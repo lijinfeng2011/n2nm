@@ -2,9 +2,6 @@
 use strict;
 use warnings;
 
-use FindBin qw( $RealBin );
-use YAML::XS;
-
-my ( $ip ) = @ARGV;
-
+my $ip = shift @ARGV;
+die "ip undef" unless $ip;
 system "ip r del $ip";
