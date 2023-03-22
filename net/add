@@ -6,18 +6,18 @@ use FindBin qw( $RealBin );
 use YAML::XS;
 
 my ( $ip, $proxy ) = @ARGV;
+die "ip undef" unless $ip;
+die "proxy undef" unless $proxy;
 
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
+die "d undef" unless $c->{d};
 
-my $name = `cat $RealBin/../my.name`;
+my   $name = `cat $RealBin/../my.name`;
 chomp $name;
+die "name undef" unless $name;
 
-unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ )
-{
-    $proxy = $c->{edge}{$proxy};
-}
-
+$proxy = $c->{edge}{$proxy} unless $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/;
 die "proxy err" unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ );
 
 system "ip route add $ip via $proxy dev $c->{d}";
