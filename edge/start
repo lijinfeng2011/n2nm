@@ -8,11 +8,6 @@ use YAML::XS;
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 
-my $port = $c->{supernode}{port};
-
-my $name = `cat $RealBin/../my.name`;
-chomp $name;
-
 my @x = `ifconfig |grep ^$c->{d}:`;
 chomp @x;
 
@@ -22,4 +17,13 @@ if( @x )
     print "Already running, skip.\n";
     exit;
 }
-system "edge -d $c->{d} -a $c->{edge}{$name} -c $c->{c} -k $c->{k} -l $c->{supernode}{ip}:$port -M $c->{m} -r";
+
+
+my    $name = `cat $RealBin/../my.name`;
+chomp $name;
+die "name undef" unless $name;
+
+map{ die "$_ undef" unless $c->{$_} }qw( d c k m );
+map{ die "supernode.$_ undef" unless $c->{supernode}{$_} }qw( ip port );
+
+system "edge -d $c->{d} -a $c->{edge}{$name} -c $c->{c} -k $c->{k} -l $c->{supernode}{ip}:$c->{supernode}{port} -M $c->{m} -r";
