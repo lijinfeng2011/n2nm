@@ -12,7 +12,7 @@ my $port = $c->{supernode}{port};
 die "port err" unless $port && $port =~ /^\d+$/;
 system "supernode -p $port";
 
-my $name = `cat $RealBin/../name`;
+my $name = `cat $RealBin/../my.name`;
 chomp $name;
 
 my @x = `ifconfig |grep ^$c->{d}:`;
