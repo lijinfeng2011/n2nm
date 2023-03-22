@@ -5,37 +5,32 @@ use warnings;
 use FindBin qw( $RealBin );
 use YAML::XS;
 
-my ( $ip, $proxy ) = @ARGV;
-
 my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 
 my $net = eval{ YAML::XS::LoadFile "$RealBin/../my.net"; };
 die "load my.net fail: $@" if $@;
 
-my $name = `cat $RealBin/../my.name`;
+my    $name = `cat $RealBin/../my.name`;
 chomp $name;
-
-
+die "name undef" unless $name;
 
 my %net;
 
 for $ip ( keys %$net )
 {
     my $proxy = $net->{$ip};
-    unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ )
-    {
-        $proxy = $c->{edge}{$proxy};
-    }
-
+    $proxy = $c->{edge}{$proxy} unless $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/;
     die "no proxy" unless $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/;
     $net{$ip} = $proxy;
 }
 
 
-my @status = `$RealBin/status`;
+my    @status = `$RealBin/status`;
+die "get status fail: $!" if $?;
 chomp @status;
 my %status;
+
 for( @status )
 {
     next unless $_ =~ /^(.+):\s+(.+)$/;
