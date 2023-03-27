@@ -15,6 +15,15 @@ my    $name = `cat $RealBin/../my.name`;
 chomp $name;
 die "name undef" unless $name;
 
+for my $k ( keys %$net )
+{
+    next if $k =~ /^\d+\.\d+\.\d+\.\d+$/;
+    my $p = delete $net->{$k};
+    my @x = `dig '$k'  +short | egrep ^'[1-9]'`;
+    chomp @x;
+    map{ $net->{$_} = $p }grep{ $_ =~ /^\d+\.\d+\.\d+\.\d+$/ }@x;
+}
+
 my %net;
 
 for $ip ( keys %$net )
