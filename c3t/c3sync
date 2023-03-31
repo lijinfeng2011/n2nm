@@ -1,0 +1,29 @@
+#!/opt/mydan/perl/bin/perl
+use strict;
+use warnings;
+
+use FindBin qw( $RealBin );
+use YAML::XS;
+use Data::Dumper;
+
+my    @x = `cat /data/open-c3-data/logs/cmdb/sync.error.log|grep '\\[Errno 110\\] Connection timed out'`;
+chomp @x;
+
+my $net = eval{ YAML::XS::LoadFile "$RealBin/../my.net"; };
+die "load my.net fail: $@" if $@;
+my %host;
+for my $x ( @x )
+{
+    next unless $x =~ /HTTP[S]{0,1}ConnectionPool\(host='([a-zA-Z\.\-\_]+)', port=\d+\)/;
+    $host{$1} ++;
+}
+
+print Dumper \%host;
+
+for my $host ( keys %host )
+{
+    next if $net->{$host};
+    system "echo '$host: txygz01' >> $RealBin/../my.net";
+}
+
+system "$RealBin/../net/sync";
