@@ -26,7 +26,7 @@ for my $k ( keys %$net )
 
 my %net;
 
-for $ip ( keys %$net )
+for my $ip ( keys %$net )
 {
     my $proxy = $net->{$ip};
     $proxy = $c->{edge}{$proxy} unless $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/;
@@ -46,7 +46,7 @@ for( @status )
     $status{$1} = $2;
 }
 
-for $ip ( keys %net )
+for my $ip ( keys %net )
 {
     my $proxy = $net{$ip};
 
