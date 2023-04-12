@@ -13,10 +13,6 @@ my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 die "d undef" unless $c->{d};
 
-my   $name = `cat $RealBin/../my.name`;
-chomp $name;
-die "name undef" unless $name;
-
 $proxy = $c->{edge}{$proxy} unless $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/;
 die "proxy err" unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ );
 
