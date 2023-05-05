@@ -4,4 +4,4 @@ use warnings;
 
 my $ip = shift @ARGV;
 die "ip undef" unless $ip;
-system "ip r del $ip";
+system "/usr/sbin/ip r del $ip";

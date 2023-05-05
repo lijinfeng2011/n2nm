@@ -9,7 +9,7 @@ my $c = eval{ YAML::XS::LoadFile "$RealBin/../conf.yml"; };
 die "load conf fail: $@" if $@;
 die "d undef" unless $c->{d};
 
-my    @x = `route -n |grep \" $c->{d}\$\"|grep 255.255.255.255|grep UGH`;
+my    @x = `/usr/sbin/route -n |grep \" $c->{d}\$\"|grep 255.255.255.255|grep UGH`;
 chomp @x;
 
 for( @x )

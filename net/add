@@ -16,4 +16,4 @@ die "d undef" unless $c->{d};
 $proxy = $c->{edge}{$proxy} unless $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/;
 die "proxy err" unless( $proxy && $proxy =~ /^\d+\.\d+\.\d+\.\d+$/ );
 
-system "ip route add $ip via $proxy dev $c->{d}";
+system "/usr/sbin/ip route add $ip via $proxy dev $c->{d}";
